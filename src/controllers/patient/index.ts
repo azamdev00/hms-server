@@ -35,47 +35,53 @@ export const getAllPatients = catchAsync(
 
 export const addPatient = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const joiError: ValidationError = req.joiError;
+    try {
+      const joiError: ValidationError = req.joiError;
 
-    if (joiError)
-      return next(
-        new AppError("invalid_req_body", joiError.details[0].message, 400)
-      );
+      if (joiError)
+        return next(
+          new AppError("invalid_req_body", joiError.details[0].message, 400)
+        );
 
-    const data: Patient = req.joiValue;
+      const data: Patient = req.joiValue;
 
-    const isFind: Patient | null = await DBCollections.patients.findOne({
-      cnic: data.cnic,
-    });
+      const isFind: Patient | null = await DBCollections.patients.findOne({
+        cnic: data.cnic,
+      });
 
-    if (isFind)
-      return next(
-        new AppError("cnic_already_taken", "Cnic is already registered", 409)
-      );
+      if (isFind)
+        return next(
+          new AppError("cnic_already_taken", "Cnic is already registered", 409)
+        );
 
-    const hashedPassword: string = await bcrypt.hash(data.password, 12);
+      const hashedPassword: string = await bcrypt.hash(data.password, 12);
 
-    const insertedData: WithId<Patient> = {
-      _id: new ObjectId(),
-      ...data,
-      password: hashedPassword,
-    };
+      const insertedData: WithId<Patient> = {
+        _id: new ObjectId(),
+        ...data,
+        password: hashedPassword,
+      };
 
-    const result: InsertOneResult<Patient> =
-      await DBCollections.patients.insertOne(insertedData);
+      const result: InsertOneResult<Patient> =
+        await DBCollections.patients.insertOne(insertedData);
 
-    if (!result.acknowledged)
-      return next(new AppError("server_error", "Please try again later", 502));
+      if (!result.acknowledged)
+        return next(
+          new AppError("server_error", "Please try again later", 502)
+        );
 
-    const safeObject = getSafeObject(data, ["password"]);
+      const safeObject = getSafeObject(data, ["password"]);
 
-    const response: ResponseObject = {
-      status: "success",
-      code: "created",
-      message: "Patient is added successfully",
-      items: safeObject,
-    };
+      const response: ResponseObject = {
+        status: "success",
+        code: "created",
+        message: "Patient is added successfully",
+        items: safeObject,
+      };
 
-    res.status(201).json(response);
+      res.status(201).json(response);
+    } catch (error) {
+      return next(new AppError("server_error", "Please try again later", 500));
+    }
   }
 );
