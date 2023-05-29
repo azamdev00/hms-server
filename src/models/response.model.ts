@@ -24,6 +24,7 @@ export type ResponseCode =
   | "no_user_role"
   | "username_already_taken"
   | "email_already_taken"
+  | "cnic_already_taken"
   | "new_email_not_found"
   | "current_password_incorrect"
   | "passwords_mismatch"

@@ -50,7 +50,7 @@ export const addPatient = catchAsync(
 
     if (isFind)
       return next(
-        new AppError("duplicate_key", "Cnic is already registered", 409)
+        new AppError("cnic_already_taken", "Cnic is already registered", 409)
       );
 
     const hashedPassword: string = await bcrypt.hash(data.password, 12);
