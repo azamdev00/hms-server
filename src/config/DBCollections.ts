@@ -1,14 +1,14 @@
 import { getDb } from "../db/conn";
-import { Country } from "../models/country.model";
+import { Patient } from "../models/patient";
 
 const db = getDb();
 
 export const collections = {
-  COUNTRY: "country",
+  PATIENT: "patient",
 };
 
-const countries = db.collection<Country>(collections.COUNTRY);
+const patients = db.collection<Patient>(collections.PATIENT);
 
-const DBCollections = { countries };
+const DBCollections = { patients };
 
 export default DBCollections;

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { countryRouter } from "./country.routes";
+import { patientRouter } from "./patient";
 
 export const mainRouter = Router();
 
-mainRouter.use("/country", countryRouter);
+mainRouter.use("/patient", patientRouter);
