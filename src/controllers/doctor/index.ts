@@ -77,7 +77,7 @@ export const addDoctor = catchAsync(
       const response: ResponseObject = {
         status: "success",
         code: "created",
-        message: "Patient is added successfully",
+        message: "Doctor is added successfully",
         items: safeObject,
       };
 
