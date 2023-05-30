@@ -6,21 +6,21 @@ import { catchAsync } from "../../utils/catch.async";
 import DBCollections from "../../config/DBCollections";
 import { ResponseObject } from "../../models/response.model";
 import AppError from "../../utils/AppError";
-import { Patient } from "../../models/patient";
 import { getSafeObject } from "../../utils/get.safe.object";
+import { Doctor } from "../../models/doctor";
 
-export const getAllPatients = catchAsync(
+export const getAllDoctors = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const patients: WithId<Patient>[] = await DBCollections.patients
+      const doctors: WithId<Doctor>[] = await DBCollections.doctors
         .find({})
         .toArray();
 
       const response: ResponseObject = {
         code: "ok",
         status: "success",
-        message: "All Countries Fetched",
-        items: patients,
+        message: "All Doctors Fetched",
+        items: doctors,
       };
 
       res.status(200).json(response);
@@ -33,7 +33,7 @@ export const getAllPatients = catchAsync(
   }
 );
 
-export const addPatient = catchAsync(
+export const addDoctor = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const joiError: ValidationError = req.joiError;
@@ -43,12 +43,13 @@ export const addPatient = catchAsync(
           new AppError("invalid_req_body", joiError.details[0].message, 400)
         );
 
-      const data: Patient = req.joiValue;
+      const data: Doctor = req.joiValue;
 
-      const isFind: WithId<Patient> | null =
-        await DBCollections.patients.findOne({
+      const isFind: WithId<Doctor> | null = await DBCollections.doctors.findOne(
+        {
           cnic: data.cnic,
-        });
+        }
+      );
 
       if (isFind)
         return next(
@@ -57,14 +58,14 @@ export const addPatient = catchAsync(
 
       const hashedPassword: string = await bcrypt.hash(data.password, 12);
 
-      const insertedData: WithId<Patient> = {
+      const insertedData: WithId<Doctor> = {
         _id: new ObjectId(),
         ...data,
         password: hashedPassword,
       };
 
-      const result: InsertOneResult<WithId<Patient>> =
-        await DBCollections.patients.insertOne(insertedData);
+      const result: InsertOneResult<WithId<Doctor>> =
+        await DBCollections.doctors.insertOne(insertedData);
 
       if (!result.acknowledged)
         return next(

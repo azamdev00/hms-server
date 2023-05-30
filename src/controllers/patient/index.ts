@@ -19,7 +19,7 @@ export const getAllPatients = catchAsync(
       const response: ResponseObject = {
         code: "ok",
         status: "success",
-        message: "All Countries Fetched",
+        message: "All Patients Fetched",
         items: patients,
       };
 
