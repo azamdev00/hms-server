@@ -8,6 +8,7 @@ export type ResponseCode =
   | "forbidden"
   | "user_not_found"
   | "patient_not_found"
+  | "doctor_not_found"
   | "already_logged_in"
   | "invalid_req_body"
   | "invalid_credentials"

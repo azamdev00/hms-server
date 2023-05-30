@@ -1,4 +1,6 @@
 export interface Doctor {
+  firstName: string;
+  lastName: string;
   cnic: string;
   email: string;
   mobile: string;

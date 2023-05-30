@@ -7,4 +7,5 @@ export const mainRouter = Router();
 
 mainRouter.use("/auth", authRouter);
 mainRouter.use("/doctor", doctorRouter);
+
 mainRouter.use("/patient", patientRouter);
