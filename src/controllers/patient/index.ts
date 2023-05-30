@@ -1,18 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 import bcrypt from "bcrypt";
+import { ValidationError } from "joi";
+import { InsertOneResult, ObjectId, WithId } from "mongodb";
 import { catchAsync } from "../../utils/catch.async";
 import DBCollections from "../../config/DBCollections";
 import { ResponseObject } from "../../models/response.model";
 import AppError from "../../utils/AppError";
 import { Patient } from "../../models/patient";
-import { ValidationError } from "joi";
-import { InsertOneResult, ObjectId, WithId } from "mongodb";
 import { getSafeObject } from "../../utils/get.safe.object";
 
 export const getAllPatients = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const patients: Patient[] = await DBCollections.patients
+      const patients: WithId<Patient>[] = await DBCollections.patients
         .find({})
         .toArray();
 
@@ -45,9 +45,10 @@ export const addPatient = catchAsync(
 
       const data: Patient = req.joiValue;
 
-      const isFind: Patient | null = await DBCollections.patients.findOne({
-        cnic: data.cnic,
-      });
+      const isFind: WithId<Patient> | null =
+        await DBCollections.patients.findOne({
+          cnic: data.cnic,
+        });
 
       if (isFind)
         return next(
@@ -62,7 +63,7 @@ export const addPatient = catchAsync(
         password: hashedPassword,
       };
 
-      const result: InsertOneResult<Patient> =
+      const result: InsertOneResult<WithId<Patient>> =
         await DBCollections.patients.insertOne(insertedData);
 
       if (!result.acknowledged)

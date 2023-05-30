@@ -25,7 +25,7 @@ export const PatientSchema = Joi.object({
     }),
   password: Joi.string()
     .min(8)
-    .max(20)
+    .max(32)
     // .pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,20}$/)
     .required()
     .messages({
