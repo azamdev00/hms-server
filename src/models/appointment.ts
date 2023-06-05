@@ -3,17 +3,17 @@ import { ObjectId } from "mongodb";
 export interface Appointment {
   _id: ObjectId;
   patientId: ObjectId;
+  opdId: ObjectId;
   time: Date;
-  status: "Active" | "Completed" | "Cancelled";
-  department: string;
+  status: "Waiting" | "Completed" | "Pending_Test" | "Cancelled";
   tokenNumber: Number;
 }
 
 export interface AddAppointmentBody {
+  opdId: ObjectId;
   fromTime: Date;
   toTime: Date;
   time: Date;
-  status: "Active" | "Completed" | "Cancelled";
-  department: string;
+  status: "Waiting" | "Completed" | "Cancelled" | "Pending_Test";
   tokenNumber: Number;
 }
