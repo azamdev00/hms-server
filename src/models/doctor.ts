@@ -1,6 +1,7 @@
+import { ObjectId } from "mongodb";
+
 export interface Doctor {
-  firstName: string;
-  lastName: string;
+  fullName: string;
   cnic: string;
   email: string;
   mobile: string;
@@ -8,5 +9,14 @@ export interface Doctor {
   address: string;
   city: string;
   state: string;
-  specialization: string;
+  speciality: string;
+  rating: number;
+  yearOfExperience: number;
+  reviews: Review[];
+}
+
+export interface Review {
+  doctorId: ObjectId;
+  review: string;
+  rating: number;
 }

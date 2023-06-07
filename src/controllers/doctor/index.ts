@@ -33,6 +33,36 @@ export const getAllDoctors = catchAsync(
   }
 );
 
+export const getDoctorById = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id: string = req.params["id"];
+      const doctor: WithId<Doctor> | null = await DBCollections.doctors.findOne(
+        { _id: new ObjectId(id) }
+      );
+
+      if (doctor)
+        return next(
+          new AppError("user_not_found", "Doctor does not exist", 404)
+        );
+
+      const response: ResponseObject = {
+        code: "ok",
+        status: "success",
+        message: "All Doctors Fetched",
+        items: doctor,
+      };
+
+      res.status(200).json(response);
+    } catch (error: any) {
+      console.log(error);
+      return next(
+        new AppError("server_error", error?.message, error?.statusCode)
+      );
+    }
+  }
+);
+
 export const addDoctor = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {

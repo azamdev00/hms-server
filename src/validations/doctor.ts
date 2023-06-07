@@ -1,13 +1,9 @@
 import Joi from "joi";
 
 export const DoctorSchema = Joi.object({
-  firstName: Joi.string().required().messages({
+  fullName: Joi.string().required().messages({
     "any.required": "First name is required.",
     "string.empty": "First name cannot be empty.",
-  }),
-  lastName: Joi.string().required().messages({
-    "any.required": "Last name is required.",
-    "string.empty": "Last name cannot be empty.",
   }),
   email: Joi.string()
     .email({ tlds: { allow: false } })
@@ -56,8 +52,12 @@ export const DoctorSchema = Joi.object({
         "Mobile number must be a valid Pakistani phone number.",
     }),
 
-  specialization: Joi.string().required().messages({
+  speciality: Joi.string().required().messages({
     "any.required": "Specilization is required",
     "string.empty": "Specilization cannot be empty",
+  }),
+  yearOfExperience: Joi.number().required().messages({
+    "any.required": "Experience is required",
+    "string.empty": "Experience cannot be empty",
   }),
 });

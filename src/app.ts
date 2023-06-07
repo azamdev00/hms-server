@@ -23,13 +23,7 @@ export const initializeApp = () => {
 
   app.use(morgan("tiny"));
 
-  app.use(
-    cors({
-      origin: process.env.ALLOWED_ORIGINS!,
-      credentials: true,
-      exposedHeaders: "Content-Disposition",
-    })
-  );
+  app.use(cors({ origin: "*" }));
 
   app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 
