@@ -31,7 +31,12 @@ export type ResponseCode =
   | "new_email_not_found"
   | "current_password_incorrect"
   | "passwords_mismatch"
-  | "record_not_found";
+  | "record_not_found"
+  | "opd_not_found"
+  | "opd_joined"
+  | "opd_left"
+  | "doctor_already_assigned"
+  | "invalid_user";
 
 export interface ResponseObject {
   status: "success" | "fail" | "error";

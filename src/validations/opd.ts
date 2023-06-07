@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-export const addOpdSchema = Joi.object({
+export const OpdSchema = Joi.object({
   departmentId: Joi.string().required().messages({
     "string.empty": "Department id should not be empty",
     "any.required": "Department id is required",

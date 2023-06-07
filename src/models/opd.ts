@@ -2,12 +2,11 @@ import { ObjectId } from "mongodb";
 
 export interface Opd {
   departmentId: ObjectId;
-  doctorId: ObjectId;
+  doctorId: ObjectId | null;
+  nextAppointment: ObjectId | null;
+  currentAppointment: ObjectId | null;
   date: Date;
-  status: "Start" | "Closed" | "Stopped";
-  treated: Number;
-  canceled: Array<Number>;
-  totalCanceled: Number;
+  status: "Start" | "Idle" | "Closed" | "Stopped";
   currentToken: Number;
   lastToken: Number;
   inQueue: Number;
