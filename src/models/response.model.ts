@@ -36,6 +36,8 @@ export type ResponseCode =
   | "opd_joined"
   | "opd_left"
   | "doctor_already_assigned"
+  | "pateint_queue_empty"
+  | "next_appointment_loaded"
   | "invalid_user";
 
 export interface ResponseObject {

@@ -5,6 +5,7 @@ import DBCollections from "../../config/DBCollections";
 import { Appointment } from "../../models/appointment";
 import { Doctor } from "../../models/doctor";
 import { AddOpdBody, Opd } from "../../models/opd";
+import { Patient } from "../../models/patient";
 import { ResponseObject } from "../../models/response.model";
 import AppError from "../../utils/AppError";
 import { catchAsync } from "../../utils/catch.async";
@@ -243,7 +244,7 @@ export const leaveOpd = catchAsync(
   }
 );
 
-// Leave Opd function that will call when doctor leave opd
+//stop OPD function that will call when the opd stopped
 export const stopOpd = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const opdId = req.params.id;
@@ -264,6 +265,89 @@ export const stopOpd = catchAsync(
       message: "Opd Closed  successfully",
     };
     return res.status(200).json(resposne);
+  }
+);
+
+// NextPatient to load the next patient as a current
+export const nextPateint = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const opdId = req.params.id;
+    // Fetching opd
+    const opd: WithId<Opd> | null = await DBCollections.opd.findOne({
+      _id: new ObjectId(opdId),
+    });
+
+    if (!opd) {
+      return next(
+        new AppError("opd_not_found", "Opd not found with the provided id", 404)
+      );
+    }
+
+    // Checking if the next patient is null
+    if (opd.nextAppointment === null) {
+      opd.currentAppointment = null;
+      opd.inQueue = 0;
+
+      await DBCollections.opd.findOneAndUpdate(
+        { _id: new ObjectId(opdId) },
+        { $set: { opd } }
+      );
+
+      const response: ResponseObject = {
+        code: "pateint_queue_empty",
+        status: "success",
+        message: "No more patients in the queue",
+        items: {
+          opd: opd,
+          currentAppointment: null,
+        },
+      };
+
+      return res.status(200).json(response);
+    }
+
+    opd.currentAppointment = opd.nextAppointment;
+
+    const currentAppointmentData: WithId<Appointment> | null =
+      await DBCollections.appointment.findOne({
+        _id: opd.currentAppointment,
+        opdId: new ObjectId(opdId),
+      });
+
+    if (currentAppointmentData)
+      opd.currentToken = currentAppointmentData.tokenNumber;
+
+    // Fetching the appointments from the db to find the next patient
+    const appointments: WithId<Appointment>[] = await DBCollections.appointment
+      .find({
+        opdId: new ObjectId(opdId),
+        status: "Waiting",
+      })
+      .sort({ tokenNumber: 1 })
+      .toArray();
+
+    if (appointments.length === 0 || appointments === null) {
+      opd.nextAppointment = null;
+    }
+
+    opd.nextAppointment = appointments[0]._id;
+
+    await DBCollections.appointment.findOneAndUpdate(
+      { _id: new ObjectId(opdId) },
+      { $set: { opd } }
+    );
+
+    const response: ResponseObject = {
+      code: "next_appointment_loaded",
+      status: "success",
+      message: "Next appointment updated",
+      items: {
+        currentAppointment: currentAppointmentData,
+        opd: opd,
+      },
+    };
+
+    return res.status(200).json(response);
   }
 );
 

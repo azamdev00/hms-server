@@ -5,6 +5,7 @@ import {
   getOpds,
   joinOpd,
   leaveOpd,
+  nextPateint,
 } from "../../controllers/opd";
 import { isDoctorLoggedIn } from "../../middlewares/auth";
 
@@ -18,6 +19,7 @@ opdRouter.get("/", getOpds);
 opdRouter.post("/", joiValidate(OpdSchema, "body"), addOpd);
 opdRouter.post("/join/:id", isDoctorLoggedIn, joinOpd);
 opdRouter.post("/leave/:id", isDoctorLoggedIn, leaveOpd);
+opdRouter.post("/next/:id", isDoctorLoggedIn, nextPateint);
 
 // Deleting all opds Utitliy funciton
 opdRouter.delete("/", deleteAllOpds);
