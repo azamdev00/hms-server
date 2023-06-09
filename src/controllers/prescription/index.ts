@@ -26,7 +26,7 @@ export const addPrescription = catchAsync(
 
       const data: WithId<Prescription> = {
         _id: new ObjectId(),
-        doctorId: req.currentUser._id,
+        doctorId: new ObjectId(req.currentUser._id),
         patientId: new ObjectId(patientId),
         opdId: new ObjectId(opdId),
         appointmentId: new ObjectId(appointmentId),

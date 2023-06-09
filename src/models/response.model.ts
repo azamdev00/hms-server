@@ -41,6 +41,9 @@ export type ResponseCode =
   | "appointments_fetched"
   | "appointment_fetched"
   | "appointment_not_found"
+  | "medicine_already_exists"
+  | "medicine_fetched"
+  | "patient_medicine_fetched"
   | "invalid_user";
 
 export interface ResponseObject {

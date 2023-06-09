@@ -6,6 +6,8 @@ import { departmentRouter } from "./department";
 import { appointmentRouter } from "./appointment";
 import { opdRouter } from "./opd";
 import { prescriptionRouter } from "./prescription";
+import { patientMedicinesRouter } from "./patientMedicine";
+import { medicineRouter } from "./medicine";
 
 export const mainRouter = Router();
 
@@ -15,5 +17,6 @@ mainRouter.use("/doctor", doctorRouter);
 mainRouter.use("/department", departmentRouter);
 mainRouter.use("/opd", opdRouter);
 mainRouter.use("/prescription", prescriptionRouter);
-
+mainRouter.use("/patientmedicine", patientMedicinesRouter);
 mainRouter.use("/patient", patientRouter);
+mainRouter.use("/medicine", medicineRouter);
