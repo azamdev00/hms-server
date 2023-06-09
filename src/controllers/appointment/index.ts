@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { RequestOptions } from "https";
 import { ValidationError } from "joi";
-import { Db, InsertOneResult, ObjectId, WithId, WithoutId } from "mongodb";
+import { InsertOneResult, ObjectId, WithId, WithoutId } from "mongodb";
 import DBCollections from "../../config/DBCollections";
 import { AddAppointmentBody, Appointment } from "../../models/appointment";
 import { Opd } from "../../models/opd";
