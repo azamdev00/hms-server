@@ -38,6 +38,9 @@ export type ResponseCode =
   | "doctor_already_assigned"
   | "pateint_queue_empty"
   | "next_appointment_loaded"
+  | "appointments_fetched"
+  | "appointment_fetched"
+  | "appointment_not_found"
   | "invalid_user";
 
 export interface ResponseObject {

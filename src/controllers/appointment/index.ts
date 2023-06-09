@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { RequestOptions } from "https";
 import { ValidationError } from "joi";
 import { Db, InsertOneResult, ObjectId, WithId, WithoutId } from "mongodb";
 import DBCollections from "../../config/DBCollections";
@@ -22,7 +23,7 @@ export const addAppointment = catchAsync(
 
       const currentPatientId: ObjectId = req.currentUser._id;
 
-      // Look for the last Token in the schema and registering the next one
+      // Look for    the last Token in the schema and registering the next one
 
       const opd: WithId<Opd> | null = await DBCollections.opd.findOne({
         _id: new ObjectId(data.opdId.toString()),
@@ -41,17 +42,17 @@ export const addAppointment = catchAsync(
       // Now searching the appointments and getting the last one id
       const appointments: WithId<Appointment>[] | null =
         await DBCollections.appointment
-          .find({ opdId: data.opdId })
+          .find({ opdId: new ObjectId(data.opdId) })
           .sort({ tokenNumber: -1 })
           .toArray();
 
       let token = 101;
 
-      if (appointments.length === 0)
+      if (appointments.length !== 0)
         token = Number(appointments[0].tokenNumber) + 1;
       const newAppointment: WithoutId<Appointment> = {
         patientId: currentPatientId,
-        opdId: data.opdId,
+        opdId: new ObjectId(data.opdId),
         status: data.status,
         time: data.time,
         tokenNumber: token,
@@ -104,5 +105,34 @@ export const getAppointments = catchAsync(
     } catch (error) {
       return next(new AppError("server_error", "Please try again later", 500));
     }
+  }
+);
+
+export const getAppoint = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id;
+
+    const appointment: WithId<Appointment> | null =
+      await DBCollections.appointment.findOne({ _id: new ObjectId(id) });
+    if (!appointment) {
+      return next(
+        new AppError(
+          "appointment_not_found",
+          "Appointment not founded with the provided id",
+          404
+        )
+      );
+    }
+
+    const response: ResponseObject = {
+      code: "appointment_fetched",
+      status: "success",
+      message: "Appointment fetched",
+      items: {
+        appointment: appointment,
+      },
+    };
+
+    return res.status(200).json(response);
   }
 );

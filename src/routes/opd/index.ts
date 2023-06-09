@@ -2,10 +2,12 @@ import { Router } from "express";
 import {
   addOpd,
   deleteAllOpds,
+  fetchOpdPatients,
+  getCurrentAppointmentDetails,
   getOpds,
   joinOpd,
   leaveOpd,
-  nextPateint,
+  nextPateient,
 } from "../../controllers/opd";
 import { isDoctorLoggedIn } from "../../middlewares/auth";
 
@@ -19,7 +21,9 @@ opdRouter.get("/", getOpds);
 opdRouter.post("/", joiValidate(OpdSchema, "body"), addOpd);
 opdRouter.post("/join/:id", isDoctorLoggedIn, joinOpd);
 opdRouter.post("/leave/:id", isDoctorLoggedIn, leaveOpd);
-opdRouter.post("/next/:id", isDoctorLoggedIn, nextPateint);
+opdRouter.post("/next/:id", isDoctorLoggedIn, nextPateient);
+opdRouter.get("/current/:id", isDoctorLoggedIn, getCurrentAppointmentDetails);
+opdRouter.get("/appointment/:id", isDoctorLoggedIn, fetchOpdPatients);
 
 // Deleting all opds Utitliy funciton
 opdRouter.delete("/", deleteAllOpds);
