@@ -13,7 +13,8 @@ import { ResponseObject } from "../../models/response.model";
 export const addPrescription = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { doctorId, patientId, opdId, medicines, diagnosis } = req.body;
+      const { patientId, opdId, medicines, diagnosis, appointmentId } =
+        req.body;
 
       const setMedicines = medicines.map((medicine: PatientMedicine) => {
         return { ...medicine, medicineId: new ObjectId(medicine.medicineId) };
@@ -25,15 +26,20 @@ export const addPrescription = catchAsync(
 
       const data: WithId<Prescription> = {
         _id: new ObjectId(),
-        doctorId: new ObjectId(doctorId),
+        doctorId: req.currentUser._id,
         patientId: new ObjectId(patientId),
         opdId: new ObjectId(opdId),
+        appointmentId: new ObjectId(appointmentId),
         medicines: setMedicines,
         diagnosis: setDiagnosis,
         createdAt: new Date(),
       };
 
       const result = await DBCollections.prescriptions.insertOne(data);
+      await DBCollections.appointment.updateOne(
+        { _id: new ObjectId(appointmentId) },
+        { $set: { status: "Completed" } }
+      );
 
       if (!result)
         return next(

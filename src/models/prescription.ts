@@ -4,6 +4,7 @@ export interface Prescription {
   doctorId: ObjectId;
   opdId: ObjectId;
   patientId: ObjectId;
+  appointmentId: ObjectId;
   createdAt: Date;
   medicines: PatientMedicine[];
   diagnosis: Diagnosis[];
