@@ -41,7 +41,7 @@ export const addAppointment = catchAsync(
       // Now searching the appointments and getting the last one id
       const appointments: WithId<Appointment>[] | null =
         await DBCollections.appointment
-          .find({ opdId: data.opdId })
+          .find({ opdId: new ObjectId(data.opdId) })
           .sort({ tokenNumber: -1 })
           .toArray();
 
@@ -51,7 +51,7 @@ export const addAppointment = catchAsync(
         token = Number(appointments[0].tokenNumber) + 1;
       const newAppointment: WithoutId<Appointment> = {
         patientId: currentPatientId,
-        opdId: data.opdId,
+        opdId: new ObjectId(data.opdId),
         status: data.status,
         time: data.time,
         tokenNumber: token,

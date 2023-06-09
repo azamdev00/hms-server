@@ -10,7 +10,7 @@ export interface Appointment {
 }
 
 export interface AddAppointmentBody {
-  opdId: ObjectId;
+  opdId: string;
   fromTime: Date;
   toTime: Date;
   time: Date;
