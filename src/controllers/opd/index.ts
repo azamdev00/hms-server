@@ -5,6 +5,7 @@ import DBCollections from "../../config/DBCollections";
 import { Appointment } from "../../models/appointment";
 import { Doctor } from "../../models/doctor";
 import { AddOpdBody, Opd } from "../../models/opd";
+import { Patient } from "../../models/patient";
 import { ResponseObject } from "../../models/response.model";
 import AppError from "../../utils/AppError";
 import { catchAsync } from "../../utils/catch.async";
@@ -67,7 +68,9 @@ export const addOpd = catchAsync(
 export const getOpds = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const opds: WithId<Opd>[] = await DBCollections.opd.find({}).toArray();
+      const opds: WithId<Opd>[] = await DBCollections.opd.find().toArray();
+
+      console.log(opds);
 
       const response: ResponseObject = {
         code: "ok",
@@ -243,7 +246,7 @@ export const leaveOpd = catchAsync(
   }
 );
 
-// Leave Opd function that will call when doctor leave opd
+//stop OPD function that will call when the opd stopped
 export const stopOpd = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const opdId = req.params.id;
@@ -267,14 +270,138 @@ export const stopOpd = catchAsync(
   }
 );
 
+// NextPatient to load the next patient as a current
+export const nextPateient = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    // 1. Finding the opd
+    // 2. Searching for the queue of the appointments
+    // 3. If there is appointments in the queue and the current token is null then loading this
+
+    const opdId = req.params.id;
+    // Fetching opd
+    const opd: WithId<Opd> | null = await DBCollections.opd.findOne({
+      _id: new ObjectId(opdId),
+    });
+
+    if (!opd) {
+      return next(
+        new AppError("opd_not_found", "Opd not found with the provided id", 404)
+      );
+    }
+
+    const appointments: WithId<Appointment>[] = await DBCollections.appointment
+      .find({ opdId: new ObjectId(opdId), status: "Waiting" })
+      .sort({ tokenNumber: 1 })
+      .toArray();
+
+    if (appointments.length === 0) {
+      console.log("No waiting patients");
+      console.log(appointments);
+
+      opd.currentAppointment = null;
+      opd.nextAppointment = null;
+      opd.inQueue = 0;
+
+      await DBCollections.opd.findOneAndUpdate(
+        { _id: new ObjectId(opdId) },
+        {
+          $set: { currentAppointment: null, nextAppointment: null, inQueue: 0 },
+        }
+      );
+
+      const response: ResponseObject = {
+        code: "pateint_queue_empty",
+        status: "success",
+        message: "No more patients in the queue",
+        items: { opd: opd },
+      };
+
+      return res.status(200).json(response);
+    }
+
+    opd.inQueue = appointments.length;
+    opd.currentAppointment = appointments[0]._id;
+    if (appointments.length === 1) {
+      opd.nextAppointment = null;
+    }
+
+    if (appointments.length > 1) {
+      opd.nextAppointment = appointments[1]._id;
+    }
+
+    await DBCollections.opd.findOneAndUpdate(
+      { _id: new ObjectId(opdId) },
+      {
+        $set: {
+          nextAppointment: opd.nextAppointment,
+          currentAppointment: opd.currentAppointment,
+          inQueue: opd.inQueue,
+        },
+      }
+    );
+
+    const response: ResponseObject = {
+      code: "next_appointment_loaded",
+      status: "success",
+      message: "Next patient details fetched",
+      items: {
+        opd: opd,
+        currentAppointment: appointments[0],
+      },
+    };
+
+    return res.status(200).json(response);
+  }
+);
+
 // Load currentPatient
 
 export const getCurrentAppointmentDetails = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const opdId = req.params.opdId;
+      const opd: WithId<Opd> | null = await DBCollections.opd.findOne({
+        _id: new Object(opdId),
+      });
+
+      if (opd === null) {
+        return next(
+          new AppError(
+            "opd_not_found",
+            "Opd doesnot exists with the provided id",
+            404
+          )
+        );
+      }
+
+      // If the opd found then we have to send the current appointment details
+
+      const currentAppointmentId: ObjectId = opd.currentAppointment as ObjectId;
+      const currentAppointment: WithId<Appointment> | null =
+        await DBCollections.appointment.findOne({
+          _id: new ObjectId(currentAppointmentId),
+        });
     } catch (error) {
       return next(new AppError("server_error", "Please try again later", 500));
     }
+  }
+);
+
+// Fetch all the appointments in the opd
+
+export const fetchOpdPatients = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id;
+
+    console.log(id);
+
+    const appointments: WithId<Appointment>[] = await DBCollections.appointment
+      .find({ $and: [{ opdId: new Object(id) }, { status: "Waiting" }] })
+      .toArray();
+
+    console.log(appointments);
+
+    return res.status(200).json({ appointments: appointments });
   }
 );
 

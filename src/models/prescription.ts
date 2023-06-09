@@ -18,7 +18,7 @@ export interface Medicine {
 
 export interface PatientMedicine {
   medicineId: ObjectId;
-  timeToTake: string;
+  timeToTake: Number;
   daysToTake: number;
   afterMeal: boolean;
 }
@@ -29,8 +29,5 @@ export interface Diagnosis {
 
 export interface Test {
   name: string;
+  report?: string;
 }
-
-// export interface LabReport {
-
-// }

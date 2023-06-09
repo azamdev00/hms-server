@@ -36,6 +36,14 @@ export type ResponseCode =
   | "opd_joined"
   | "opd_left"
   | "doctor_already_assigned"
+  | "pateint_queue_empty"
+  | "next_appointment_loaded"
+  | "appointments_fetched"
+  | "appointment_fetched"
+  | "appointment_not_found"
+  | "medicine_already_exists"
+  | "medicine_fetched"
+  | "patient_medicine_fetched"
   | "invalid_user";
 
 export interface ResponseObject {

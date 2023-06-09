@@ -1,5 +1,9 @@
 import { Router } from "express";
-import { addAppointment, getAppointments } from "../../controllers/appointment";
+import {
+  addAppointment,
+  getAppoint,
+  getAppointments,
+} from "../../controllers/appointment";
 import { addDeparment, getAllDepartments } from "../../controllers/department";
 import { isPatientLoggedIn } from "../../middlewares/auth";
 import { joiValidate } from "../../middlewares/joi.validate";
@@ -16,6 +20,7 @@ appointmentRouter.post(
 );
 
 appointmentRouter.get("/", getAppointments);
+appointmentRouter.get("/:id", getAppoint);
 
 // departmentRouter.get("/", getAllDepartments);
 // departmentRouter.post("/", joiValidate(DepartmentSchema, "body"), addDeparment);
