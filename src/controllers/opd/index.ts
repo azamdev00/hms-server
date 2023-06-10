@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { ValidationError } from "joi";
+import { date, ValidationError } from "joi";
 import { Db, InsertOneResult, ObjectId, WithId, WithoutId } from "mongodb";
 import DBCollections from "../../config/DBCollections";
 import { Appointment } from "../../models/appointment";
@@ -91,8 +91,20 @@ export const getOpds = catchAsync(
 export const getActiveOpds = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const opds: WithId<Opd>[] = await DBCollections.opd
-        .find({ status: "Start" })
+      const today = new Date();
+      const todayDay = today.getDate();
+
+      const opds = await DBCollections.opd
+        .aggregate([
+          {
+            $match: {
+              status: { $in: ["Start", "Idle"] },
+              $expr: {
+                $eq: [{ $dayOfMonth: "$date" }, todayDay],
+              },
+            },
+          },
+        ])
         .toArray();
 
       const response: ResponseObject = {
@@ -104,6 +116,7 @@ export const getActiveOpds = catchAsync(
 
       res.status(200).json(response);
     } catch (error) {
+      console.log(error);
       return next(new AppError("server_error", "Please try again later", 500));
     }
   }
