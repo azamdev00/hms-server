@@ -44,6 +44,9 @@ export type ResponseCode =
   | "medicine_already_exists"
   | "medicine_fetched"
   | "patient_medicine_fetched"
+  | "test_record_created"
+  | "test_fetched"
+  | "fetched"
   | "invalid_user";
 
 export interface ResponseObject {

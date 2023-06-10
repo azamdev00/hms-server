@@ -5,9 +5,11 @@ import { Doctor } from "../models/doctor";
 import { Opd } from "../models/opd";
 import { Patient } from "../models/patient";
 import {
+  Diagnosis,
   Medicine,
   PatientMedicine,
   Prescription,
+  Test,
 } from "../models/prescription";
 
 const db = getDb();
@@ -21,6 +23,8 @@ export const collections = {
   DEPARTMENT: "department",
   PATIENTMEDICINES: "patientMedicines",
   MEDICINES: "medicines",
+  TEST: "test",
+  DIAGNOSIS: "diagnosis",
 };
 
 const appointment = db.collection<Appointment>(collections.APPOINTMENT);
@@ -33,6 +37,8 @@ const patientMedicines = db.collection<PatientMedicine>(
   collections.PATIENTMEDICINES
 );
 const medicines = db.collection<Medicine>(collections.MEDICINES);
+const test = db.collection<Test>(collections.TEST);
+const diagnosis = db.collection<Diagnosis>(collections.DIAGNOSIS);
 
 const DBCollections = {
   doctors,
@@ -43,6 +49,8 @@ const DBCollections = {
   prescriptions,
   patientMedicines,
   medicines,
+  test,
+  diagnosis,
 };
 
 export default DBCollections;

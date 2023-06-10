@@ -8,6 +8,8 @@ import { opdRouter } from "./opd";
 import { prescriptionRouter } from "./prescription";
 import { patientMedicinesRouter } from "./patientMedicine";
 import { medicineRouter } from "./medicine";
+import { testRotuer } from "./test";
+import { diagnosisRouter } from "./diagnosis";
 
 export const mainRouter = Router();
 
@@ -20,3 +22,5 @@ mainRouter.use("/prescription", prescriptionRouter);
 mainRouter.use("/patientmedicine", patientMedicinesRouter);
 mainRouter.use("/patient", patientRouter);
 mainRouter.use("/medicine", medicineRouter);
+mainRouter.use("/test", testRotuer);
+mainRouter.use("/diagnosis", diagnosisRouter);

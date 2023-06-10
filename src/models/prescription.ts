@@ -25,9 +25,10 @@ export interface PatientMedicine {
 
 export interface Diagnosis {
   testId: ObjectId;
+  report?: string;
 }
 
 export interface Test {
   name: string;
-  report?: string;
+  description: string;
 }

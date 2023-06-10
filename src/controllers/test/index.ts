@@ -2,13 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import { ValidationError } from "joi";
 import { InsertOneResult, ObjectId, WithId } from "mongodb";
 import DBCollections from "../../config/DBCollections";
-import { PatientMedicine } from "../../models/prescription";
+import { Test } from "../../models/prescription";
 import { ResponseObject } from "../../models/response.model";
 import AppError from "../../utils/AppError";
 import { catchAsync } from "../../utils/catch.async";
 
-// Add patient medicine to create patient medicine
-export const addPatientMedicine = catchAsync(
+export const AddTest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const joiError: ValidationError = req.joiError;
 
@@ -18,15 +17,15 @@ export const addPatientMedicine = catchAsync(
       );
     }
 
-    const data: PatientMedicine = req.joiValue;
+    const data: Test = req.joiValue;
 
-    const insertedData: WithId<PatientMedicine> = {
+    const insertedData: WithId<Test> = {
       _id: new ObjectId(),
       ...data,
     };
 
-    const result: InsertOneResult<WithId<PatientMedicine>> =
-      await DBCollections.patientMedicines.insertOne(insertedData);
+    const result: InsertOneResult<WithId<Test>> =
+      await DBCollections.test.insertOne(insertedData);
 
     if (!result.acknowledged)
       return next(new AppError("server_error", "Please try again later", 502));
@@ -34,27 +33,27 @@ export const addPatientMedicine = catchAsync(
     const response: ResponseObject = {
       status: "success",
       code: "created",
-      message: "Pateint medicine is added successfully",
-      items: data,
+      message: "Test is added successfully",
+      items: insertedData,
     };
 
     res.status(201).json(response);
   }
 );
 
-// Get PatientMedicine Function to query all patient medicines
-export const getPatientMedicine = catchAsync(
+// get test that will return all the tests in the database
+
+export const getTest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const patientMedicines: WithId<PatientMedicine>[] =
-      await DBCollections.patientMedicines.find().toArray();
+    const tests: WithId<Test>[] = await DBCollections.test.find().toArray();
 
     const response: ResponseObject = {
-      code: "patient_medicine_fetched",
+      code: "test_fetched",
       status: "success",
-      message: "All patient medicine fetched",
-      items: {
-        patientMedicines: patientMedicines,
-      },
+      message: "All test fetched",
+      items: tests,
     };
+
+    return res.status(200).json(response);
   }
 );
