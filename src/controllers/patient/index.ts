@@ -71,7 +71,7 @@ export const addPatient = catchAsync(
           new AppError("server_error", "Please try again later", 502)
         );
 
-      const safeObject = getSafeObject(data, ["password"]);
+      const safeObject = getSafeObject(insertedData, ["password"]);
 
       const response: ResponseObject = {
         status: "success",
