@@ -4,6 +4,8 @@ export interface Appointment {
   _id: ObjectId;
   patientId: ObjectId;
   opdId: ObjectId;
+  fromTime: Date;
+  toTime: Date;
   time: Date;
   status: "Waiting" | "Completed" | "Pending_Test" | "Cancelled";
   tokenNumber: Number;

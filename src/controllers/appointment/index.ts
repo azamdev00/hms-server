@@ -55,6 +55,8 @@ export const addAppointment = catchAsync(
         status: data.status,
         time: data.time,
         tokenNumber: token,
+        fromTime: data.fromTime,
+        toTime: data.toTime,
       };
 
       // Inserting new appointment
