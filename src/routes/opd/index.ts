@@ -5,6 +5,7 @@ import {
   fetchOpdPatients,
   getActiveOpds,
   getCurrentAppointmentDetails,
+  getOpdById,
   getOpds,
   joinOpd,
   leaveOpd,
@@ -25,6 +26,7 @@ opdRouter.post("/next/:id", isDoctorLoggedIn, nextPateient);
 opdRouter.get("/current/:id", isDoctorLoggedIn, getCurrentAppointmentDetails);
 opdRouter.get("/appointment/:id", isDoctorLoggedIn, fetchOpdPatients);
 opdRouter.get("/active", getActiveOpds);
+opdRouter.get("/:id", getOpdById);
 
 // Deleting all opds Utitliy funciton
 opdRouter.delete("/", deleteAllOpds);

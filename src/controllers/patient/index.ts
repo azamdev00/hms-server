@@ -8,6 +8,10 @@ import { ResponseObject } from "../../models/response.model";
 import AppError from "../../utils/AppError";
 import { Patient } from "../../models/patient";
 import { getSafeObject } from "../../utils/get.safe.object";
+import { Appointment } from "../../models/appointment";
+import { Prescription } from "../../models/prescription";
+import { resolve } from "path";
+import { rejects } from "assert";
 
 export const getAllPatients = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -86,3 +90,32 @@ export const addPatient = catchAsync(
     }
   }
 );
+
+// Get patient history
+
+export const getPatientHistory = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const patientId = req.params.id;
+
+    const appointment = await getPatientWithAppointments(patientId);
+
+    return res.json(appointment);
+  }
+);
+
+export const getPatientWithAppointments = (patientId: string | ObjectId) => {
+  return new Promise(async (resolve, rejects) => {
+    const patient: WithId<Patient> | null =
+      await DBCollections.patients.findOne({ _id: new ObjectId(patientId) });
+
+    if (patient == null) rejects("Patient record not found");
+    else {
+      const appointments: WithId<Appointment>[] =
+        await DBCollections.appointment
+          .find({ patientId: patient._id })
+          .toArray();
+
+      resolve(appointments);
+    }
+  });
+};

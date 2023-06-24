@@ -6,4 +6,5 @@ import { PatientSchema } from "../../validations/pateint";
 export const patientRouter = Router();
 
 patientRouter.get("/", getAllPatients);
+patientRouter.get("/history/:id", getAllPatients);
 patientRouter.post("/", joiValidate(PatientSchema, "body"), addPatient);

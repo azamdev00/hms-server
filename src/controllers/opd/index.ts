@@ -418,6 +418,38 @@ export const fetchOpdPatients = catchAsync(
   }
 );
 
+// Get Opd by Id
+
+export const getOpdById = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id;
+
+    const opd: WithId<Opd> | null = await DBCollections.opd.findOne({
+      _id: new ObjectId(id),
+    });
+
+    if (opd) {
+      const response: ResponseObject = {
+        code: "fetched",
+        status: "success",
+        message: "OPD record fetched",
+        items: opd,
+      };
+
+      return res.status(200).json(response);
+    } else {
+      const response: ResponseObject = {
+        code: "opd_not_found",
+        status: "fail",
+        message: "OPD record not found with the provided id",
+        items: null,
+      };
+
+      return res.status(404).json(response);
+    }
+  }
+);
+
 // Utility functions
 
 export const deleteAllOpds = catchAsync(

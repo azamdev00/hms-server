@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, response, Response } from "express";
 import { ValidationError } from "joi";
 import { InsertOneResult, ObjectId, WithId, WithoutId } from "mongodb";
 import DBCollections from "../../config/DBCollections";
@@ -132,6 +132,47 @@ export const getAppoint = catchAsync(
       items: {
         appointment: appointment,
       },
+    };
+
+    return res.status(200).json(response);
+  }
+);
+
+// Fetch patient appointment through patient id (Require Patient Login )
+
+export const getPatientAppointmentByPatientId = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id;
+
+    // Finding the appointments with the patient id
+    const appointments: WithId<Appointment>[] = await DBCollections.appointment
+      .find({ patientId: new ObjectId(id) })
+      .toArray();
+
+    const response: ResponseObject = {
+      code: "appointment_fetched",
+      message: "Patient associated appointment fetched",
+      status: "success",
+      items: appointments,
+    };
+
+    return res.status(200).json(response);
+  }
+);
+
+// Get appointment with status waiting
+
+export const getWaitingPatients = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const appointments: WithId<Appointment>[] = await DBCollections.appointment
+      .find({ status: "Waiting" })
+      .toArray();
+
+    const response: ResponseObject = {
+      code: "fetched",
+      status: "success",
+      message: "All waitin appointments fetched",
+      items: appointments,
     };
 
     return res.status(200).json(response);

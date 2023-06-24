@@ -3,6 +3,8 @@ import {
   addAppointment,
   getAppoint,
   getAppointments,
+  getPatientAppointmentByPatientId,
+  getWaitingPatients,
 } from "../../controllers/appointment";
 import { addDeparment, getAllDepartments } from "../../controllers/department";
 import { isPatientLoggedIn } from "../../middlewares/auth";
@@ -21,6 +23,8 @@ appointmentRouter.post(
 
 appointmentRouter.get("/", getAppointments);
 appointmentRouter.get("/:id", getAppoint);
+appointmentRouter.get("/patient/:id", getPatientAppointmentByPatientId);
+appointmentRouter.get("/waiting", getWaitingPatients);
 
 // departmentRouter.get("/", getAllDepartments);
 // departmentRouter.post("/", joiValidate(DepartmentSchema, "body"), addDeparment);
