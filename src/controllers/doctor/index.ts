@@ -41,7 +41,7 @@ export const getDoctorById = catchAsync(
         { _id: new ObjectId(id) }
       );
 
-      if (doctor)
+      if (!doctor)
         return next(
           new AppError("user_not_found", "Doctor does not exist", 404)
         );
