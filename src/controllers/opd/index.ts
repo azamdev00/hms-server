@@ -68,18 +68,37 @@ export const addOpd = catchAsync(
 export const getOpds = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const opds: WithId<Opd>[] = await DBCollections.opd.find().toArray();
+      const { skip } = req.body;
+      const opds: WithId<Opd>[] = await DBCollections.opd
+        .find({})
+        .limit(20)
+        .skip(skip ?? 0)
+        .toArray();
 
-      console.log(opds);
+      const filterOpd = opds.map(async (opd: Opd) => {
+        const department = await DBCollections.departments.findOne({
+          _id: new ObjectId(opd.departmentId),
+        });
 
-      const response: ResponseObject = {
-        code: "ok",
-        status: "success",
-        message: "All Opds Fetched",
-        items: opds,
-      };
+        let doctor: Doctor | null = null;
+        if (opd.doctorId)
+          doctor = await DBCollections.doctors.findOne({
+            _id: new ObjectId(opd?.doctorId ?? ""),
+          });
 
-      res.status(200).json(response);
+        return { ...opd, department, doctor };
+      });
+
+      Promise.all(filterOpd).then((data) => {
+        const response: ResponseObject = {
+          code: "ok",
+          status: "success",
+          message: "All Opds Fetched",
+          items: data,
+        };
+
+        res.status(200).json(response);
+      });
     } catch (error) {
       return next(new AppError("server_error", "Please try again later", 500));
     }

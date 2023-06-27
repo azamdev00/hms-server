@@ -9,9 +9,6 @@ import AppError from "../../utils/AppError";
 import { Patient } from "../../models/patient";
 import { getSafeObject } from "../../utils/get.safe.object";
 import { Appointment } from "../../models/appointment";
-import { Prescription } from "../../models/prescription";
-import { resolve } from "path";
-import { rejects } from "assert";
 
 export const getAllPatients = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
