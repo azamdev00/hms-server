@@ -75,16 +75,18 @@ export const getOpds = catchAsync(
         .skip(skip ?? 0)
         .toArray();
 
+      const doctors = await DBCollections.doctors.find().toArray();
+
       const filterOpd = opds.map(async (opd: Opd) => {
         const department = await DBCollections.departments.findOne({
           _id: new ObjectId(opd.departmentId),
         });
 
-        let doctor: Doctor | null = null;
+        let doctor: Doctor | undefined;
         if (opd.doctorId)
-          doctor = await DBCollections.doctors.findOne({
-            _id: new ObjectId(opd?.doctorId ?? ""),
-          });
+          doctor = doctors.find(
+            (doc) => doc._id.toString() === opd.doctorId?.toString()
+          );
 
         return { ...opd, department, doctor };
       });
@@ -95,6 +97,7 @@ export const getOpds = catchAsync(
           status: "success",
           message: "All Opds Fetched",
           items: data,
+          doctors,
         };
 
         res.status(200).json(response);
