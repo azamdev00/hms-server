@@ -9,6 +9,7 @@ import { Patient } from "../../models/patient";
 import { ResponseObject } from "../../models/response.model";
 import AppError from "../../utils/AppError";
 import { catchAsync } from "../../utils/catch.async";
+import { Department } from "../../models/department";
 
 export const addOpd = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -75,12 +76,18 @@ export const getOpds = catchAsync(
         .skip(skip ?? 0)
         .toArray();
 
-      const doctors = await DBCollections.doctors.find().toArray();
+      const doctors: WithId<Doctor>[] = await DBCollections.doctors
+        .find()
+        .toArray();
+      const departments: WithId<Department>[] = await DBCollections.departments
+        .find()
+        .toArray();
 
       const filterOpd = opds.map(async (opd: Opd) => {
-        const department = await DBCollections.departments.findOne({
-          _id: new ObjectId(opd.departmentId),
-        });
+        const department = departments.find(
+          (depart: WithId<Department>) =>
+            depart._id.toString() === opd.departmentId.toString()
+        );
 
         let doctor: Doctor | undefined;
         if (opd.doctorId)
@@ -98,6 +105,7 @@ export const getOpds = catchAsync(
           message: "All Opds Fetched",
           items: data,
           doctors,
+          departments,
         };
 
         res.status(200).json(response);
