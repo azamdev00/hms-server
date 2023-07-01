@@ -1,10 +1,17 @@
 import { NextFunction, Request, Response } from "express";
-import { date, ValidationError } from "joi";
-import { Db, InsertOneResult, ObjectId, WithId, WithoutId } from "mongodb";
+import Joi, { date, ValidationError } from "joi";
+import {
+  Db,
+  InsertOneResult,
+  MongoKerberosError,
+  ObjectId,
+  WithId,
+  WithoutId,
+} from "mongodb";
 import DBCollections from "../../config/DBCollections";
 import { Appointment } from "../../models/appointment";
 import { Doctor } from "../../models/doctor";
-import { AddOpdBody, Opd } from "../../models/opd";
+import { AddOpdBody, assignDoctorBody, Opd } from "../../models/opd";
 import { Patient } from "../../models/patient";
 import { ResponseObject } from "../../models/response.model";
 import AppError from "../../utils/AppError";
@@ -33,6 +40,7 @@ export const addOpd = catchAsync(
         currentAppointment: null,
         nextAppointment: null,
         doctorId: null,
+        assignedDoctor: body.assignedDoctor,
       };
 
       const insertedData: WithId<Opd> = {
@@ -446,6 +454,52 @@ export const getOpdById = catchAsync(
       };
 
       return res.status(404).json(response);
+    }
+  }
+);
+
+// Assign doctor to opd
+
+export const assignDoctor = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const joiError: ValidationError = req.joiError;
+
+    if (joiError)
+      return next(
+        new AppError("invalid_req_body", joiError.details[0].message, 400)
+      );
+
+    const data: assignDoctorBody = req.joiValue;
+
+    const doctorId = new ObjectId(data.assignedDoctor?.toString());
+    const opdId = new ObjectId(data.opdId?.toString());
+    // Now checking if the doctor exists
+
+    const doctor: WithId<Doctor> | null = await DBCollections.doctors.findOne({
+      _id: new ObjectId(doctorId),
+    });
+
+    if (doctor === null) {
+      return next(
+        new AppError(
+          "doctor_not_found",
+          "Doctor record not founded with the provided id",
+          404
+        )
+      );
+    } else {
+      const updatedOpd = await DBCollections.opd.updateOne(
+        { _id: opdId },
+        { assignedDoctor: doctorId }
+      );
+
+      const response: ResponseObject = {
+        code: "updated",
+        status: "success",
+        message: "Doctor assigned successfully",
+        items: updatedOpd,
+      };
+      return res.status(200).json();
     }
   }
 );

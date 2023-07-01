@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   addOpd,
+  assignDoctor,
   deleteAllOpds,
   fetchOpdPatients,
   getActiveOpds,
@@ -14,7 +15,7 @@ import {
 import { isDoctorLoggedIn } from "../../middlewares/auth";
 
 import { joiValidate } from "../../middlewares/joi.validate";
-import { OpdSchema } from "../../validations/opd";
+import { assignDoctorSchema, OpdSchema } from "../../validations/opd";
 
 export const opdRouter = Router();
 
@@ -27,6 +28,11 @@ opdRouter.get("/current/:id", isDoctorLoggedIn, getCurrentAppointmentDetails);
 opdRouter.get("/appointment/:id", isDoctorLoggedIn, fetchOpdPatients);
 opdRouter.get("/active", getActiveOpds);
 opdRouter.get("/:id", getOpdById);
+opdRouter.post(
+  "/doctor/assign",
+  joiValidate(assignDoctorSchema, "body"),
+  assignDoctor
+);
 
 // Deleting all opds Utitliy funciton
 opdRouter.delete("/", deleteAllOpds);
