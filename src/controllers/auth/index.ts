@@ -91,6 +91,8 @@ export const doctorLogin = catchAsync(
     const data: DoctorLogin = req.joiValue;
 
     try {
+      // Checking if role is doctor
+
       const doctor: WithId<Doctor> | null = await DBCollections.doctors.findOne(
         { cnic: data.cnic }
       );

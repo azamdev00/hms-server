@@ -10,6 +10,7 @@ import { patientMedicinesRouter } from "./patientMedicine";
 import { medicineRouter } from "./medicine";
 import { testRotuer } from "./test";
 import { diagnosisRouter } from "./diagnosis";
+import { adminRouter } from "./admin";
 
 export const mainRouter = Router();
 
@@ -24,3 +25,4 @@ mainRouter.use("/patient", patientRouter);
 mainRouter.use("/medicine", medicineRouter);
 mainRouter.use("/test", testRotuer);
 mainRouter.use("/diagnosis", diagnosisRouter);
+mainRouter.use("/admin", adminRouter);
