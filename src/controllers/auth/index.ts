@@ -13,8 +13,8 @@ import { getSafeObject } from "../../utils/get.safe.object";
 import { ResponseObject } from "../../models/response.model";
 import { Doctor } from "../../models/doctor";
 
-export function signJWT(payload: any) {
-  return jwt.sign({ sub: payload }, process.env.JWT_SECRET as string, {
+export function signJWT(cnic: string) {
+  return jwt.sign({ sub: cnic }, process.env.JWT_SECRET as string, {
     expiresIn: process.env.JWT_EXPIRES_IN + "d",
   });
 }
@@ -182,7 +182,7 @@ export const login = catchAsync(
 
       const safeUser = getSafeObject(doctor, ["password"]);
 
-      const jwt = signJWT({ cnic: doctor.cnic, role: "doctor" });
+      const jwt = signJWT(doctor.cnic);
 
       const response: ResponseObject = {
         code: "authenticated",
@@ -217,7 +217,7 @@ export const login = catchAsync(
 
       const safeUser = getSafeObject(admin, ["password"]);
 
-      const jwt = signJWT({ cnic: admin.cnic, role: "admin" });
+      const jwt = signJWT(admin.cnic);
 
       const response: ResponseObject = {
         code: "authenticated",
