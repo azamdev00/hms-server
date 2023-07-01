@@ -82,6 +82,7 @@ export const getOpds = catchAsync(
         .find({})
         .limit(20)
         .skip(skip ?? 0)
+        .sort({ date: -1 })
         .toArray();
 
       const doctors: WithId<Doctor>[] = await DBCollections.doctors
@@ -506,10 +507,10 @@ export const assignDoctor = catchAsync(
     // Now checking if the doctor exists
 
     const doctor: WithId<Doctor> | null = await DBCollections.doctors.findOne({
-      _id: new ObjectId(doctorId),
+      _id: doctorId,
     });
 
-    if (doctor === null) {
+    if (!doctor) {
       return next(
         new AppError(
           "doctor_not_found",
@@ -517,20 +518,20 @@ export const assignDoctor = catchAsync(
           404
         )
       );
-    } else {
-      const updatedOpd = await DBCollections.opd.updateOne(
-        { _id: opdId },
-        { assignedDoctor: doctorId }
-      );
-
-      const response: ResponseObject = {
-        code: "updated",
-        status: "success",
-        message: "Doctor assigned successfully",
-        items: updatedOpd,
-      };
-      return res.status(200).json();
     }
+
+    const result = await DBCollections.opd.updateOne(
+      { _id: opdId },
+      { $set: { doctorId: doctorId } }
+    );
+
+    const response: ResponseObject = {
+      code: "updated",
+      status: "success",
+      message: "Doctor assigned successfully",
+      items: doctor,
+    };
+    return res.status(203).json(response);
   }
 );
 
