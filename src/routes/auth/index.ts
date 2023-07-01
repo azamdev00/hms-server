@@ -1,10 +1,15 @@
 import { Router } from "express";
 import { joiValidate } from "../../middlewares/joi.validate";
-import { DoctorLoginSchema, PatientLoginSchema } from "../../validations/auth";
+import {
+  DoctorLoginSchema,
+  LoginSchema,
+  PatientLoginSchema,
+} from "../../validations/auth";
 import {
   doctorLogin,
   getCurrentDoctor,
   getCurrentPatient,
+  login,
   patientLogin,
 } from "../../controllers/auth";
 import { isDoctorLoggedIn, isPatientLoggedIn } from "../../middlewares/auth";
@@ -21,6 +26,8 @@ authRouter.post(
   joiValidate(DoctorLoginSchema, "body"),
   doctorLogin
 );
+
+authRouter.post("/login", joiValidate(LoginSchema, "body"), login);
 
 authRouter.get("/patient", isPatientLoggedIn, getCurrentPatient);
 authRouter.get("/doctor", isDoctorLoggedIn, getCurrentDoctor);
