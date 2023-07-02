@@ -36,6 +36,7 @@ export const addAdmin = catchAsync(
       _id: new ObjectId(),
       ...data,
       password: hashedPassword,
+      role: "admin",
     };
 
     const result: InsertOneResult<WithId<Admin>> =

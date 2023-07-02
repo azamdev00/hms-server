@@ -92,6 +92,7 @@ export const addDoctor = catchAsync(
         _id: new ObjectId(),
         ...data,
         password: hashedPassword,
+        role: "doctor",
       };
 
       const result: InsertOneResult<WithId<Doctor>> =

@@ -7,6 +7,7 @@ export interface Doctor {
   mobile: string;
   password: string;
   address: string;
+  role: string;
   city: string;
   state: string;
   speciality: string;
