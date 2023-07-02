@@ -1,18 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import Joi, { date, ValidationError } from "joi";
-import {
-  Db,
-  InsertOneResult,
-  MongoKerberosError,
-  ObjectId,
-  WithId,
-  WithoutId,
-} from "mongodb";
+import { ValidationError } from "joi";
+import { Db, InsertOneResult, ObjectId, WithId } from "mongodb";
 import DBCollections from "../../config/DBCollections";
 import { Appointment } from "../../models/appointment";
 import { Doctor } from "../../models/doctor";
 import { AddOpdBody, assignDoctorBody, Opd } from "../../models/opd";
-import { Patient } from "../../models/patient";
 import { ResponseObject } from "../../models/response.model";
 import AppError from "../../utils/AppError";
 import { catchAsync } from "../../utils/catch.async";
@@ -30,6 +22,10 @@ export const addOpd = catchAsync(
 
       const body: AddOpdBody = req.joiValue;
 
+      const department = await DBCollections.departments.findOne({
+        _id: new ObjectId(body.departmentId),
+      });
+
       const newOpd: WithId<Opd> = {
         _id: new ObjectId(),
         currentToken: 101,
@@ -42,7 +38,7 @@ export const addOpd = catchAsync(
         currentAppointment: null,
         nextAppointment: null,
         doctorId: null,
-        assignedDoctor: body.assignedDoctor,
+        // assignedDoctor: body.assignedDoctor,
       };
 
       const result: InsertOneResult<WithId<Opd>> =
@@ -53,11 +49,16 @@ export const addOpd = catchAsync(
           new AppError("server_error", "Please try again later", 502)
         );
 
+      const opd = {
+        ...newOpd,
+        department,
+      };
+
       const response: ResponseObject = {
         status: "success",
         code: "created",
         message: "Opd is started successfully",
-        items: newOpd,
+        items: opd,
       };
 
       res.status(201).json(response);
