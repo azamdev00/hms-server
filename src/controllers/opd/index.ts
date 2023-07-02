@@ -30,7 +30,8 @@ export const addOpd = catchAsync(
 
       const body: AddOpdBody = req.joiValue;
 
-      const newOpd: WithoutId<Opd> = {
+      const newOpd: WithId<Opd> = {
+        _id: new ObjectId(),
         currentToken: 101,
         date: new Date(),
         departmentId: body.departmentId,
@@ -44,13 +45,8 @@ export const addOpd = catchAsync(
         assignedDoctor: body.assignedDoctor,
       };
 
-      const insertedData: WithId<Opd> = {
-        _id: new ObjectId(),
-        ...newOpd,
-      };
-
       const result: InsertOneResult<WithId<Opd>> =
-        await DBCollections.opd.insertOne(insertedData);
+        await DBCollections.opd.insertOne(newOpd);
 
       if (!result.acknowledged)
         return next(
