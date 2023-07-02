@@ -11,6 +11,7 @@ import {
   joinOpd,
   leaveOpd,
   nextPateient,
+  stopOpd,
 } from "../../controllers/opd";
 import { isDoctorLoggedIn } from "../../middlewares/auth";
 
@@ -23,6 +24,7 @@ opdRouter.get("/", getOpds);
 opdRouter.post("/", joiValidate(OpdSchema, "body"), addOpd);
 opdRouter.post("/join/:id", isDoctorLoggedIn, joinOpd);
 opdRouter.post("/leave/:id", isDoctorLoggedIn, leaveOpd);
+opdRouter.post("/stop/:id", isDoctorLoggedIn, stopOpd);
 opdRouter.post("/next/:id", isDoctorLoggedIn, nextPateient);
 opdRouter.get("/current/:id", isDoctorLoggedIn, getCurrentAppointmentDetails);
 opdRouter.get("/appointment/:id", isDoctorLoggedIn, fetchOpdPatients);

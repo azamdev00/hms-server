@@ -174,16 +174,6 @@ export const joinOpd = catchAsync(
 
       const opdId = req.params.id;
 
-      if (!ObjectId.isValid(opdId)) {
-        return next(
-          new AppError(
-            "invalid_req_params",
-            "Opd id must be a vlid mongodb Object id",
-            400
-          )
-        );
-      }
-
       // Fetching the opd infor that it exists
       const checkOpd: WithId<Opd> | null = await DBCollections.opd.findOne({
         _id: new ObjectId(opdId),
@@ -195,22 +185,12 @@ export const joinOpd = catchAsync(
         );
       }
 
-      if (checkOpd.doctorId != null) {
-        return next(
-          new AppError(
-            "doctor_already_assigned",
-            "A doctor is currently working in this opd",
-            400
-          )
-        );
-      }
       // Updated the opd to Joined
-      const opd = await DBCollections.opd.updateOne(
+      await DBCollections.opd.updateOne(
         { _id: new ObjectId(opdId) },
         {
           $set: {
             status: "Start",
-            doctorId: new ObjectId(doctor?._id),
           },
         }
       );
@@ -305,7 +285,7 @@ export const stopOpd = catchAsync(
       { _id: new ObjectId(opdId) },
       {
         $set: {
-          status: "Closed",
+          status: "Stopped",
         },
       }
     );
@@ -313,7 +293,7 @@ export const stopOpd = catchAsync(
     const resposne: ResponseObject = {
       code: "opd_left",
       status: "success",
-      message: "Opd Closed  successfully",
+      message: "Opd Closed successfully",
     };
     return res.status(200).json(resposne);
   }

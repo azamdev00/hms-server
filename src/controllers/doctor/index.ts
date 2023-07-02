@@ -118,3 +118,27 @@ export const addDoctor = catchAsync(
     }
   }
 );
+
+export const getDoctorOpd = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = req.currentUser;
+
+      const opd = await DBCollections.opd.findOne({
+        $and: [{ doctorId: user._id }, { status: { $ne: "Closed" } }],
+      });
+
+      const response: ResponseObject = {
+        status: "success",
+        code: "created",
+        message: "Doctor OPD fetch successfully",
+        items: opd,
+      };
+
+      res.status(200).json(response);
+    } catch (error) {
+      console.log(error);
+      return next(new AppError("server_error", "Please try again later", 500));
+    }
+  }
+);
