@@ -158,6 +158,35 @@ export const getActiveOpds = catchAsync(
   }
 );
 
+export const changeOpdStatus = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { status, id } = req.body;
+
+      const result = await DBCollections.opd.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { status: status } }
+      );
+
+      if (!result.modifiedCount)
+        return next(
+          new AppError("server_error", "Please try again later", 500)
+        );
+
+      const response: ResponseObject = {
+        code: "ok",
+        status: "success",
+        message: "OPD status change successfully",
+      };
+
+      res.status(203).json(response);
+    } catch (error) {
+      console.log(error);
+      return next(new AppError("server_error", "Please try again later", 500));
+    }
+  }
+);
+
 // Join Opd function that will call for a doctor to join opd
 export const joinOpd = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {

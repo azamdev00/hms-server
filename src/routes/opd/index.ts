@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   addOpd,
   assignDoctor,
+  changeOpdStatus,
   deleteAllOpds,
   fetchOpdPatients,
   getActiveOpds,
@@ -13,7 +14,7 @@ import {
   nextPateient,
   stopOpd,
 } from "../../controllers/opd";
-import { isDoctorLoggedIn } from "../../middlewares/auth";
+import { isAdminLoggedIn, isDoctorLoggedIn } from "../../middlewares/auth";
 
 import { joiValidate } from "../../middlewares/joi.validate";
 import { assignDoctorSchema, OpdSchema } from "../../validations/opd";
@@ -26,6 +27,7 @@ opdRouter.post("/join/:id", isDoctorLoggedIn, joinOpd);
 opdRouter.post("/leave/:id", isDoctorLoggedIn, leaveOpd);
 opdRouter.post("/stop/:id", isDoctorLoggedIn, stopOpd);
 opdRouter.post("/next/:id", isDoctorLoggedIn, nextPateient);
+opdRouter.post("/changestatus", isAdminLoggedIn, changeOpdStatus);
 opdRouter.get("/current/:id", isDoctorLoggedIn, getCurrentAppointmentDetails);
 opdRouter.get("/appointment/:id", isDoctorLoggedIn, fetchOpdPatients);
 opdRouter.get("/active", getActiveOpds);
