@@ -451,10 +451,11 @@ export const fetchOpdPatients = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id;
 
-    console.log(id);
+    if (!ObjectId.isValid(id))
+      return next(new AppError("invalid_req_params", "Invalid opd id", 400));
 
     const appointments: WithId<Appointment>[] = await DBCollections.appointment
-      .find({ $and: [{ opdId: new Object(id) }, { status: "Waiting" }] })
+      .find({ opdId: new ObjectId(id) })
       .toArray();
 
     console.log(appointments);

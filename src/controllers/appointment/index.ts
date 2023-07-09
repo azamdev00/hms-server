@@ -77,7 +77,7 @@ export const addAppointment = catchAsync(
         status: "success",
         code: "created",
         message: "Appointment is booked successfully",
-        items: newAppointment,
+        items: insertedData,
       };
 
       res.status(201).json(response);
