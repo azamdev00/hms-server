@@ -12,6 +12,7 @@ import {
   Prescription,
   Test,
 } from "../models/prescription";
+import { Article } from "../models/article";
 
 const db = getDb();
 
@@ -27,6 +28,7 @@ export const collections = {
   TEST: "test",
   DIAGNOSIS: "diagnosis",
   ADMIN: "admin",
+  ARTICLE: "article",
 };
 
 const appointment = db.collection<Appointment>(collections.APPOINTMENT);
@@ -42,6 +44,7 @@ const medicines = db.collection<Medicine>(collections.MEDICINES);
 const test = db.collection<Test>(collections.TEST);
 const diagnosis = db.collection<Diagnosis>(collections.DIAGNOSIS);
 const admin = db.collection<Admin>(collections.ADMIN);
+const article = db.collection<Article>(collections.ARTICLE);
 
 const DBCollections = {
   doctors,
@@ -55,6 +58,7 @@ const DBCollections = {
   test,
   diagnosis,
   admin,
+  article,
 };
 
 export default DBCollections;
