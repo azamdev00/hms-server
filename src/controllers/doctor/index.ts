@@ -8,6 +8,8 @@ import { ResponseObject } from "../../models/response.model";
 import AppError from "../../utils/AppError";
 import { getSafeObject } from "../../utils/get.safe.object";
 import { Doctor } from "../../models/doctor";
+import { Patient } from "../../models/patient";
+import { Opd } from "../../models/opd";
 
 export const getAllDoctors = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -124,15 +126,35 @@ export const getDoctorOpd = catchAsync(
     try {
       const user = req.currentUser;
 
-      const opd = await DBCollections.opd.findOne({
+      let opd: WithId<Opd> | null = await DBCollections.opd.findOne({
         $and: [{ doctorId: user._id }, { status: { $ne: "Closed" } }],
       });
+
+      let patient: Patient | null = null;
+
+      const appointment = await DBCollections.appointment.findOne({
+        opdId: opd?._id,
+        tokenNumber: opd?.currentToken,
+      });
+
+      if (appointment)
+        patient = await DBCollections.patients.findOne({
+          _id: new ObjectId(appointment.patientId),
+        });
+
+      const filterOpd = {
+        ...opd,
+        patient,
+        appointment,
+      };
+
+      console.log(opd, filterOpd);
 
       const response: ResponseObject = {
         status: "success",
         code: "created",
         message: "Doctor OPD fetch successfully",
-        items: opd,
+        items: filterOpd,
       };
 
       res.status(200).json(response);
